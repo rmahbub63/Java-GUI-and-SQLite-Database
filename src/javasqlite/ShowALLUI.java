@@ -11,18 +11,17 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-
-
 /**
  *
  * @author MAHBUB
  */
 public class ShowALLUI extends javax.swing.JFrame {
-
+    
     Connection connection = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
     DefaultTableModel defaultTableModel = new DefaultTableModel();
+
     /**
      * Creates new form ShowALLUI
      */
@@ -56,7 +55,7 @@ public class ShowALLUI extends javax.swing.JFrame {
         txtPhone = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,10 +93,10 @@ public class ShowALLUI extends javax.swing.JFrame {
 
         jLabel4.setText("Email:");
 
-        jButton1.setText("DELETE");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnDelete.setText("DELETE");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnDeleteActionPerformed(evt);
             }
         });
 
@@ -133,7 +132,7 @@ public class ShowALLUI extends javax.swing.JFrame {
                                         .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(267, 267, 267)
-                        .addComponent(jButton1)))
+                        .addComponent(btnDelete)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -160,7 +159,7 @@ public class ShowALLUI extends javax.swing.JFrame {
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
@@ -176,13 +175,29 @@ public class ShowALLUI extends javax.swing.JFrame {
         txtPhone.setText(tbl.getValueAt(currentRow, 3).toString());
     }//GEN-LAST:event_tblMouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         connection = JavaSqlite.connectDB();
-        if(connection != null){
-            
+        if (connection != null) {
+            String currentId = tbl.getValueAt(tbl.getSelectedRow(), 1).toString();
+            String sql = "Delete from student where id = '" + currentId + "'";
+            try {
+                pst = connection.prepareStatement(sql);
+                pst.execute();
+                JOptionPane.showMessageDialog(null, "Data Deleted");
+                defaultTableModel.removeRow(tbl.getSelectedRow());
+                clearField();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            } finally{
+                try {
+                    connection.close();
+                    pst.close();
+                } catch (Exception e) {
+                }
+            }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -218,16 +233,21 @@ public class ShowALLUI extends javax.swing.JFrame {
             }
         });
     }
-    
-    public void loadData(){
+    public void clearField(){
+        txtName.setText("");
+        txtID.setText("");
+        txtEmail.setText("");
+        txtPhone.setText("");
+    }
+    public void loadData() {
         connection = JavaSqlite.connectDB();
-        if(connection != null){
+        if (connection != null) {
             String sql = "Select name,id,phone,email from student";
             try {
                 pst = connection.prepareStatement(sql);
                 rs = pst.executeQuery();
                 Object[] columnData = new Object[4];
-                while(rs.next()){
+                while (rs.next()) {
                     columnData[0] = rs.getString("name");
                     columnData[1] = rs.getString("id");
                     columnData[2] = rs.getString("phone");
@@ -236,7 +256,7 @@ public class ShowALLUI extends javax.swing.JFrame {
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
-            } finally{
+            } finally {
                 try {
                     connection.close();
                     pst.close();
@@ -246,9 +266,9 @@ public class ShowALLUI extends javax.swing.JFrame {
             }
         }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
